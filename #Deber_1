@@ -1,0 +1,267 @@
+/*
+ *                    UNIVERSIDAD TÉCNICA DEL NORTE
+ *                         SISTEMAS EMBEBIDOS
+ *                      JUAN CARLOS VILATUÑA ROMO
+ *                               DEBER #1
+ * Realizar un programa que accione mediante 4 switchs a un juego de luces diferente.
+ */
+
+const int vec[6]={7,8,9,10,11,12};
+
+const int p1=7;
+const int p2=8;
+const int p3=9;
+const int p4=10;
+const int p5=11;
+const int p6=12;
+const int btn = 1;
+const int btn1 = 2;
+const int btn2 = 3;
+const int btn3 = 4;
+
+int i=0;
+int j=0;
+int k=0;
+int e=0;
+int m=0;
+int n=0;
+int x=0;
+int y=0;
+int d=0;
+int u=0;
+int s=0;
+int r=0;
+int h=0;
+int c=0;
+
+
+void setup() {
+
+  for(i=0;i<6;i++){
+    pinMode(vec[i],OUTPUT);
+  }
+
+   pinMode(btn,INPUT);
+   pinMode(btn1,INPUT);
+   pinMode(btn2,INPUT);
+   pinMode(btn3,INPUT);
+   pinMode(p1,OUTPUT);
+   pinMode(p2,OUTPUT);
+   pinMode(p3,OUTPUT);
+   pinMode(p4,OUTPUT);
+   pinMode(p5,OUTPUT);
+   pinMode(p6,OUTPUT);
+
+}
+
+void loop() {
+
+  /* 
+   * Juego #1
+   * Se usan 6 leds, de los cuales se encienden los pares por 10 ocasiones
+   */
+
+    if (digitalRead (btn)==HIGH){
+    delay(300);
+    d=1-d;
+    if (d==1){
+      for(u=0;u<10;u++){
+        digitalWrite (p1,LOW);
+        digitalWrite (p2,HIGH);
+        delay(200); 
+        digitalWrite (p1,LOW);
+        digitalWrite (p2,LOW);
+        delay (200);
+        digitalWrite (p3,LOW);
+        digitalWrite (p4,HIGH);
+        delay(200); 
+        digitalWrite (p3,LOW);
+        digitalWrite (p4,LOW);
+        delay (200);
+        digitalWrite (p5,LOW);
+        digitalWrite (p6,HIGH);
+        delay(200); 
+        digitalWrite (p5,LOW);
+        digitalWrite (p6,LOW);
+        delay (200);
+        }
+
+       }else{
+        if(d==0){
+          for(s=0;s<10;s++){
+          digitalWrite (p1,LOW);
+          digitalWrite (p2,LOW);
+          delay(300); 
+          digitalWrite (p1,LOW);
+          digitalWrite (p2,LOW);
+          delay (300);
+          digitalWrite (p3,LOW);
+          digitalWrite (p4,LOW);
+          delay(300); 
+          digitalWrite (p3,LOW);
+          digitalWrite (p4,LOW);
+          delay (300);
+          digitalWrite (p5,LOW);
+          digitalWrite (p6,LOW);
+          delay(300); 
+          digitalWrite (p5,LOW);
+          digitalWrite (p6,LOW);
+          delay (300);
+        }
+
+       }
+       
+       }
+    }
+
+    /*
+     * Juego #2
+     * Se usan 6 leds, de los cuales se encienden los impartes por 10 ocasiones
+     */
+
+      if (digitalRead (btn1)==HIGH){
+    delay(300);
+    r=1-r;
+    if (r==1){
+      for(h=0;h<10;h++){
+        digitalWrite (p1,HIGH);
+        digitalWrite (p2,LOW);
+        delay(200); 
+        digitalWrite (p1,LOW);
+        digitalWrite (p2,LOW);
+        delay (200);
+        digitalWrite (p3,HIGH);
+        digitalWrite (p4,LOW);
+        delay(200); 
+        digitalWrite (p3,LOW);
+        digitalWrite (p4,LOW);
+        delay (200);
+        digitalWrite (p5,HIGH);
+        digitalWrite (p6,LOW);
+        delay(200); 
+        digitalWrite (p5,LOW);
+        digitalWrite (p6,LOW);
+        delay (200);
+        }
+
+       }else{
+        if(r==0){
+          for(c=0;c<10;c++){
+          digitalWrite (p1,LOW);
+          digitalWrite (p2,LOW);
+          delay(300); 
+          digitalWrite (p1,LOW);
+          digitalWrite (p2,LOW);
+          delay (300);
+          digitalWrite (p3,LOW);
+          digitalWrite (p4,LOW);
+          delay(300); 
+          digitalWrite (p3,LOW);
+          digitalWrite (p4,LOW);
+          delay (300);
+          digitalWrite (p5,LOW);
+          digitalWrite (p6,LOW);
+          delay(300); 
+          digitalWrite (p5,LOW);
+          digitalWrite (p6,LOW);
+          delay (300);
+        }
+
+          
+        }
+        
+       }
+
+    }
+
+    /*
+     * Juego #3
+     * Se encienden secuencialmente cada uno ellos 
+     */
+
+  if(digitalRead(btn2)== HIGH){
+    delay(200);
+    e=1-e;
+    if(e==1){
+      for(j=0;j<8;j++){
+      for(i=0;i<6;i++){
+        digitalWrite(vec[i],HIGH);
+        delay(150);
+        digitalWrite(vec[i],LOW);
+        delay(150);
+        }
+    }
+    }else{
+     if(e==0){
+      for(k=0;k<8;k++){
+      for(i=0;i<6;i++){
+        digitalWrite(vec[i],LOW);
+        delay(150);
+        digitalWrite(vec[i],LOW);
+        delay(150);
+        }
+       }
+       }
+     }
+  }
+
+
+    /*
+     * Juego #4
+     * Su propio diseño de juego. 
+     */
+
+    if (digitalRead (btn3)==HIGH){
+    delay(300);
+    e=1-e;
+    if (e==1){
+      for(x=0;x<8;x++){
+        digitalWrite (p1,HIGH);
+        digitalWrite (p6,HIGH);
+        delay(200); 
+        digitalWrite (p1,LOW);
+        digitalWrite (p6,LOW);
+        delay (200);
+        digitalWrite (p2,HIGH);
+        digitalWrite (p5,HIGH);
+        delay(200); 
+        digitalWrite (p2,LOW);
+        digitalWrite (p5,LOW);
+        delay (200);
+        digitalWrite (p3,HIGH);
+        digitalWrite (p4,HIGH);
+        delay(200); 
+        digitalWrite (p3,LOW);
+        digitalWrite (p4,LOW);
+        delay (200);
+        }
+
+       }else{
+        if(e==0){
+          for(y=0;y<10;y++){
+          digitalWrite (p1,LOW);
+          digitalWrite (p2,LOW);
+          delay(300); 
+          digitalWrite (p1,LOW);
+          digitalWrite (p2,LOW);
+          delay (300);
+          digitalWrite (p3,LOW);
+          digitalWrite (p4,LOW);
+          delay(300); 
+          digitalWrite (p3,LOW);
+          digitalWrite (p4,LOW);
+          delay (300);
+          digitalWrite (p5,LOW);
+          digitalWrite (p6,LOW);
+          delay(300); 
+          digitalWrite (p5,LOW);
+          digitalWrite (p6,LOW);
+          delay (300);
+        }
+
+       }
+
+    }
+    }
+
+  }
