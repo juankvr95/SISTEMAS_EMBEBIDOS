@@ -1,0 +1,74 @@
+/*
+ *                                          UNIVERSIDAD TÉCNICA DEL NORTE
+ *                                   CARRERA DE INGENIERÍA EN TELECOMUNICAIONEES 
+ *                                               SISTEMAS EMBEBIDOS
+ *                               LABORATORIO 1: PUERTOS DIGITALES Y COMUNICACIÓN SERIA
+ *                                            JUAN CARLOS VILATUÑA ROMO
+ */
+
+
+#include <LiquidCrystal.h>
+
+String a;
+String b;
+String nam[4];
+int cont=0;
+
+const int btn = 7;
+const int p1 = 6;
+
+
+LiquidCrystal lcd (13,12,11,10,9,8);
+
+void setup() {
+   pinMode(btn,INPUT);
+   lcd.begin(16,2);
+   Serial.begin(9600);
+   Serial.println("Ingrese codigo: ");
+
+}
+
+void loop() {
+
+  if(digitalRead(btn)==LOW){
+    delay(500);
+                  if(Serial.available()>0){
+                          a = Serial.readString();
+                          nam[cont] = a;
+                          cont++;
+                          if(a == "ca900813"){
+                              b = "Carlos Arias";
+                                  }else if(a=="aj881112" ){
+                                      b = "Andres Juarez";
+                                          }else if(a == "ja890109"){
+                                              b= "Javier Andrade";
+                                                    }else if(a=="1003994900"){
+                                                         b = "Juan Vilatuña";
+                                                         Serial.println("El usuario fue registrado exitosamente");
+                                                    }else{
+                                                            b = "Usuario no registrado";
+                                                            Serial.println("El usuario no existe");
+                                                   }
+                          int tam=a.length();
+                          for(int i=1;i<tam+2;i++){
+                                  digitalRead(btn);
+                                  String t=a.substring(i-1);
+                                  lcd.clear();
+                                  lcd.println(t);
+                                  delay(300); 
+                          }
+                      
+                    }
+                          lcd.setCursor(0,0);
+                          lcd.print("Bienvenido :"); 
+                          lcd.setCursor(16,0);
+                          lcd.print(b);
+                          b = " ";
+            
+      }
+     lcd.setCursor(16,1);
+     lcd.autoscroll();
+     lcd.print(" ");
+     delay(500);
+        
+}
