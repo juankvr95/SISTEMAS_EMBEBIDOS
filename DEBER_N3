@@ -1,0 +1,187 @@
+/*
+ *                             UNIVERSIDAD TÉCNICA DEL NORTE 
+ *                                  SISTEMAS EMBEBIDOS
+ *                                      DEBER #3
+ *                              JUAN CARLOS VILATUÑA ROMO
+ * Realizar un programa de juego de preguntas. Se debe tener mínimo 8 preguntas que deben 
+ * observarse en orden aleatorio. La forma de visualización es por medio de comunicación serial. 
+ * Su respuesta solo debe ser "SI" y "NO" ingresadas de la misma forma por comunicación serial. 
+ * Al final de mostrar solo 5 de las 8 preguntas. Se presentan el puntaje (respuestas acertadas) 
+ * en un display.
+ */
+
+const int p1 = 11;
+const int p2 = 10;
+const int p3 = 9;
+const int p4 = 8;
+const int btn =7;
+const int btn1 =6;
+
+int cont = 0;
+int cont1 = 0;
+int cont2 = 0;
+int cont3 = 0;
+int n1 = 0;
+int l;
+
+String respuesta;
+
+void setup() {
+
+  Serial.begin(9600);
+  pinMode(p1, OUTPUT);
+  pinMode(p2, OUTPUT);
+  pinMode(p3, OUTPUT);
+  pinMode(p4, OUTPUT);
+  pinMode(btn,INPUT);
+  pinMode(btn1,INPUT);
+  
+  Serial.println("Bienvenido ingrese la respuesta correcta");
+
+}
+
+void loop() {
+
+  if(digitalRead(btn)==LOW){
+      delay(200);
+  if (Serial.available() > 0) {
+        delay(200);
+        for(l=0;l<=5;l++){
+            delay(200);
+            Serial.println("Pregunta"+l);
+              if (cont <=5) {
+                preguntas(n1);
+                respuesta = Serial.readString();
+                respuesta.toLowerCase();
+                answer (cont, respuesta);
+                cont++;
+                Serial.print(cont);
+             }else if (cont > 5) {
+                contador(cont3);
+                Serial.println("");
+                cont = 0;
+                                }
+                         }
+                  }
+              }
+       }
+ 
+
+void contador (int i) {
+  switch (i) {
+    case 0:
+      digitalWrite(p1, LOW);
+      digitalWrite(p2, LOW);
+      digitalWrite(p3, LOW);
+      digitalWrite(p4, LOW);
+      break;
+    case 1:
+      digitalWrite(p1, HIGH);
+      digitalWrite(p2, LOW);
+      digitalWrite(p3, LOW);
+      digitalWrite(p4, LOW);
+      break;
+    case 2:
+      digitalWrite(p1, LOW);
+      digitalWrite(p2, HIGH);
+      digitalWrite(p3, LOW);
+      digitalWrite(p4, LOW);
+      break;
+    case 3:
+      digitalWrite(p1, HIGH);
+      digitalWrite(p2, HIGH);
+      digitalWrite(p3, LOW);
+      digitalWrite(p4, LOW);
+      break;
+    case 4:
+      digitalWrite(p1, LOW);
+      digitalWrite(p2, LOW);
+      digitalWrite(p3, HIGH);
+      digitalWrite(p4, LOW);
+      break;
+    case 5:
+      digitalWrite(p1, HIGH);
+      digitalWrite(p2, LOW);
+      digitalWrite(p3, HIGH);
+      digitalWrite(p4, LOW);
+      break;
+    case 6:
+      digitalWrite(p1, LOW);
+      digitalWrite(p2, HIGH);
+      digitalWrite(p3, HIGH);
+      digitalWrite(p4, LOW);
+      break;
+    case 7:
+      digitalWrite(p1, HIGH);
+      digitalWrite(p2, HIGH);
+      digitalWrite(p3, HIGH);
+      digitalWrite(p4, LOW);
+      break;
+    case 8:
+      digitalWrite(p1, LOW);
+      digitalWrite(p2, LOW);
+      digitalWrite(p3, LOW);
+      digitalWrite(p4, HIGH);
+      break;
+    case 9:
+      digitalWrite(p1, HIGH);
+      digitalWrite(p2, LOW);
+      digitalWrite(p3, LOW);
+      digitalWrite(p4, HIGH);
+      break;
+    case 10:
+      digitalWrite(p1, LOW);
+      digitalWrite(p2, HIGH);
+      digitalWrite(p3, LOW);
+      digitalWrite(p4, HIGH);
+      break;
+
+  }
+}
+
+
+void preguntas(int p) {
+  p = random(1,8);
+  switch (p) {
+    case 1:
+      Serial.println("   Es importante lavarse las manos frecuentemente, V o F");
+      break;
+    case 2:
+      Serial.println("  Es importante cubrirse la boca y la nariz con un pañuelo desechable al tose o estornudar, V o F");
+      break;
+    case 3:
+      Serial.println("  Es importante evitar el contacto directo con las personas, V o F ");
+      break;
+    case 4:
+      Serial.println("  Es necesario limpiar y desinfectar su casa a diario, V o F");
+      break;
+    case 5:
+      Serial.println("  Es necesario realizar un monitoreo de su salud diariamente, V o F");
+      break;
+    case 6:
+      Serial.println("  Es importante evitar las zonas concurridas si es adulto mayor, V o F");
+      break;
+    case 7:
+      Serial.println("   Ventilar los ambientes todos los dias es un factor importante, V o F" );
+      break;
+    case 8:
+      Serial.println("   Acercarse a una persona a menos de 2 metros es lo correcto, V o F");
+      break;
+  }
+}
+String veri;
+String r1 = "v";
+String r2 = "f";
+void answer (int answ , String tx) {
+
+  if (tx == r1){
+    Serial.println("Respuesta correcta");
+    cont1++;
+  }else if (tx == r2){
+    Serial.println("Respuesta incorrecta");
+    cont2++;
+  }
+}
+  
+
+
