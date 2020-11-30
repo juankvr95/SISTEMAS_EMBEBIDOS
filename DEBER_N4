@@ -1,0 +1,100 @@
+/*
+ *                             UNIVERSIDAD TÉCNICA DEL NORTE 
+ *                                  SISTEMAS EMBEBIDOS
+ *                                      DEBER #4
+ *                              JUAN CARLOS VILATUÑA ROMO
+ * Realice un sistema que codifique las vocales en palabras ingresadas por comunicación serial. 
+ * Este mensaje se ingresa por comunicación serial en el master, este envía al esclavo para que 
+ * realice la codificación por comunicación I2C. Luego, lo envía al master por el mismo medio y 
+ * se muestra el resultado en una LCD en el master. La codificación es:
+ * a=@
+ * e=#
+ * i= !
+ * o = *
+ * u= $
+ */
+
+///////////////////////////////    MASTER   /////////////////////////////////////
+
+
+#include <Wire.h>
+char dato;
+
+void setup() {
+  Wire.begin();
+  Serial.begin(9600);
+  
+}
+
+void loop() {
+
+  if(Serial.available()>0){
+    dato=Serial.read();
+    Wire.beginTransmission(4);
+    Wire.write(dato);
+    Wire.endTransmission(); 
+  }
+  
+
+}
+
+////////////////////////////////////////////  ESCLAVO //////////////////////////////////
+
+#include <Wire.h>
+#include<LiquidCrystal.h> 
+
+LiquidCrystal lcd(13,12,11,10,9,8);
+int i;
+String data;
+String dato;
+char num;
+void setup() {
+  lcd.begin(16,2);
+  Wire.begin(4);
+  Wire.onReceive(receiveEvent); 
+  lcd.setCursor(0,0);
+  Serial.begin(9600);
+
+}
+void loop() {
+}
+
+void receiveEvent(int bytes){
+  while(Wire.available()){
+    if(Serial.available()){
+      data = Serial.readString();
+      //lcd.clear();
+      //lcd.print(data);   
+  }
+      char imp=Wire.read();
+      dato=dato+imp;
+      //lcd.print(dato);
+      String a1="";
+      for(i=0;i<=dato.length();i++){
+      switch(dato[i]){
+        case 'a':
+         a1=a1+"@";
+        break;
+        case 'e':
+          a1=a1+"#";
+        break;
+        case 'i':
+          a1=a1+"!";
+        break;
+        case 'o':
+          a1=a1+"*";
+        break;
+        case 'u':
+          a1=a1+"$";
+        break;
+        default:
+        break;
+      }
+      }
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print(dato);
+      lcd.setCursor(0,1);
+      lcd.println(a1);
+  }
+}
