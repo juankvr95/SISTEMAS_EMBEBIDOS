@@ -1,0 +1,295 @@
+/*
+ *                    UNIVERSIDAD TÉCNICA DEL NORTE
+ *                         SISTEMAS EMBEBIDOS
+ *                      JUAN CARLOS VILATUÑA ROMO
+ *                               DEBER #6
+ * Realizar un reloj con alarma ingresada por comunicación serial.  
+ * Los números sean vistos en displays                           
+ *                               
+ */
+
+
+#include <MsTimer2.h>
+#include <LiquidCrystal.h>
+
+
+const int btn = 3;
+
+const int A = 8; //DECODIFICADOR
+const int B = 9; //DECODIFICADOR
+const int C = 10; //DECODIFICADOR
+const int D = 11; //DECODIFICADOR
+
+const int decenas_horas = 13;
+const int unidades_horas = 12;
+
+const int decenas_min = 13;
+const int unidades_min = 12;
+
+const int decenas_seg = 13;
+const int unidades_seg = 12;
+
+
+LiquidCrystal lcd {13,12,11,10,9,8};
+
+int segundos = 0;
+int minutos = 0;
+int horas = 0;
+
+int segundos1 = 0;
+int minutos1 = 0;
+int horas1 = 0;
+
+
+int uni;
+int dec;
+
+int unim;
+int decm;
+
+int unih;
+int dech;
+
+
+int valor =0;
+int valor1 =0;
+
+String dato;
+String dato1;
+int onn;
+const int led1 = 7;
+const int led2 = 6;
+const int led3 = 5;
+String leer;
+int pass=0;
+
+void setup() {
+  lcd.begin (16,2);
+  MsTimer2::set(1000,reloj);
+  MsTimer2::start();
+  //attachInterrupt(0,alarma,LOW);
+  Serial.begin(9600);
+  pinMode(led1,OUTPUT);
+  pinMode(led2,OUTPUT);
+  pinMode(led3,OUTPUT);
+  Serial.println("Alarma: horas, minutos");
+  pinMode(btn,INPUT);
+}
+
+void loop() {
+  
+if (Serial.available()>0){
+    switch (onn){
+      case 0:
+        Serial.println("Horas: ");
+        dato = Serial.readString();
+        valor = dato.toInt();
+        onn++;
+      break;
+      case 1:
+        Serial.println("Minutos");
+        dato1 = Serial.readString();
+        valor1 = dato1.toInt();
+        onn=0;
+      break;
+
+   }
+        
+       Serial.print(String("ALARMA: ")+String(valor)+String(":")+String(valor1));
+       lcd.setCursor(0,1);
+       lcd.print(String("Alarma")+String(valor)+String(":")+String(valor1)); 
+       delay(300);
+
+       if(valor == minutos){
+        Serial.println("Activado");
+        digitalWrite(led1,HIGH);
+        delay(200);
+       }else if(valor1 == segundos){
+        Serial.println("Activado");
+        digitalWrite(led1,HIGH);
+        delay(200); 
+              }
+       
+        }               
+        
+}
+    
+
+void reloj(){
+  if(segundos < 60)
+    segundos++;
+  else{
+    segundos = 0;
+    if (minutos < 60)
+      minutos++;
+      else{
+      minutos =0;
+      if (horas<24)
+      horas++;
+      else 
+      horas = 0;
+      }
+    }
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("RELOJ :");
+      lcd.setCursor(6,0);
+    lcd.print(String(horas)+String(":")+String(minutos)+String(":")+String(segundos));
+    
+  }
+
+
+
+  void relojDisp(){
+
+    ///////////////////////////////SEGUNDOS
+    if(digitalRead(btn)==HIGH){
+    delay(300);
+      if(segundos<60){
+      segundos++;
+      if(segundos<10)
+      uni=segundos;
+      else{
+        dec = segundos/10;
+        uni = segundos - dec*10;
+      }
+    }
+    else 
+    segundos = 0;
+
+    ///////////////////MINUTOS
+
+    if(minutos<60){
+      minutos++;
+      if(minutos<10)
+      unim=minutos;
+      else{
+        decm = minutos/10;
+        unim = minutos - decm*10;
+      }
+    }
+    else 
+    minutos = 0;
+
+    ///////////////// HORAS
+    
+    if(horas<=24){
+      horas++;
+      if(horas<10)
+      unih=horas;
+      else{
+        dech = horas/10;
+        unih = horas - dech*10;
+      }
+    }
+    else 
+    horas = 0;
+    
+  }
+  digitalWrite(unidades_seg, HIGH);
+  digitalWrite(decenas_seg,LOW);
+  secuencia(uni);
+  delay(200);
+  digitalWrite(unidades_seg,LOW);
+  digitalWrite(decenas_seg,HIGH);
+  secuencia(dec);
+  delay(200);
+
+  digitalWrite(unidades_min, HIGH);
+  digitalWrite(decenas_min,LOW);
+  secuencia(unim);
+  delay(200);
+  digitalWrite(unidades_min,LOW);
+  digitalWrite(decenas_min,HIGH);
+  secuencia(decm);
+  delay(200);
+
+  digitalWrite(unidades_horas, HIGH);
+  digitalWrite(decenas_horas,LOW);
+  secuencia(unih);
+  delay(200);
+  digitalWrite(unidades_horas,LOW);
+  digitalWrite(decenas_horas,HIGH);
+  secuencia(dech);
+  delay(200);
+
+
+  
+}
+ 
+
+  void secuencia (int i){
+
+    switch (i){
+      case 0:
+        digitalWrite(A,LOW);
+        digitalWrite(B,LOW);
+        digitalWrite(C,LOW);
+        digitalWrite(D,LOW);
+      break;
+
+      case 1:
+        digitalWrite(A,HIGH);
+        digitalWrite(B,LOW);
+        digitalWrite(C,LOW);
+        digitalWrite(D,LOW);
+      break;
+
+      case 2:
+        digitalWrite(A,LOW);
+        digitalWrite(B,HIGH);
+        digitalWrite(C,LOW);
+        digitalWrite(D,LOW);
+      break;
+
+      case 3:
+        digitalWrite(A,HIGH);
+        digitalWrite(B,HIGH);
+        digitalWrite(C,LOW);
+        digitalWrite(D,LOW);
+      break;
+
+      case 4:
+        digitalWrite(A,LOW);
+        digitalWrite(B,LOW);
+        digitalWrite(C,HIGH);
+        digitalWrite(D,LOW);
+      break;
+
+      case 5:
+        digitalWrite(A,HIGH);
+        digitalWrite(B,LOW);
+        digitalWrite(C,HIGH);
+        digitalWrite(D,LOW);
+      break;
+
+      case 6:
+        digitalWrite(A,LOW);
+        digitalWrite(B,HIGH);
+        digitalWrite(C,HIGH);
+        digitalWrite(D,LOW);
+      break;
+
+      case 7:
+        digitalWrite(A,HIGH);
+        digitalWrite(B,HIGH);
+        digitalWrite(C,HIGH);
+        digitalWrite(D,LOW);
+      break;
+
+      case 8:
+        digitalWrite(A,LOW);
+        digitalWrite(B,LOW);
+        digitalWrite(C,LOW);
+        digitalWrite(D,HIGH);
+      break;
+
+      case 9:
+        digitalWrite(A,HIGH);
+        digitalWrite(B,LOW);
+        digitalWrite(C,LOW);
+        digitalWrite(D,LOW);
+      break;   
+    }
+    
+  }
