@@ -1,0 +1,103 @@
+/*
+ *                     UNIVERSIDAD TÉCNICA DEL NORTE
+ *                         SISTEMAS EMBEBIDOS
+ *                      JUAN CARLOS VILATUÑA ROMO
+ *                               DEBER #7
+ * Realiza un programa que valide y actualice una contraseña almacenada en la memoria EEPROM. 
+ * Como estado inicial, la contraseña es de 4 dígitos que son: 4563. 
+ * 
+ */
+# include <EEPROM.h>
+# include <LiquidCrystal.h>
+# include <TimerOne.h>
+
+LiquidCrystal lcd = {13,12,11,10,9,8};
+
+
+int texto = 4563 ;
+int txt;
+int txt1;
+int i = 0;
+int onn = 0;
+int camb;
+
+String dato2;
+String dato;
+String dato1;
+String newt;
+
+
+void setup() {
+Serial.begin(9600);
+lcd.begin(16,2);
+Serial.println("Ingrese la clave: ");
+attachInterrupt(0,cambio,RISING);
+EEPROM.write(10,texto);
+
+}
+
+void loop() {
+if (Serial.available() > 0) {
+for (i = 0; i < 255; i++) {
+EEPROM.write(i, 0);
+}
+dato = Serial.readString();
+txt = dato.toInt();
+
+Serial.println("");
+if (txt == texto){
+    EEPROM.put(10, texto);
+    lcd.setCursor(0,0);
+    lcd.print("-Bienvenido-");
+    lcd.setCursor(0,1);
+    lcd.print("Clave correcta....");
+    
+}else{
+    lcd.setCursor(0,0);
+    lcd.print("-Error !!-");
+    lcd.setCursor(0,1);
+    lcd.print("Clave invalida....");
+        }
+
+ }
+
+ if(onn==2){
+  
+  if(Serial.available()>0)
+  delay(200);
+  
+    dato1 = Serial.readString();
+    
+    if (dato1 == "si"){
+      Serial.println("Ingrese el cambio de clave");
+      dato2 = Serial.readString();
+      camb = dato2.toInt();
+      EEPROM.put(0,camb);
+      delay(10000);
+      EEPROM.update(0,texto);
+      Serial.println("Actualizado");  
+      texto = camb;
+      delay(1000);  
+    }
+  }
+}
+
+
+void cambio(){
+  switch(onn){
+    case 0:
+      Serial.println("Bienvenido usuario");
+      onn++;  
+    break;
+    
+    case 1:
+    Serial.println("Desea cambiar la clave si o no");
+    onn++;
+    break;
+
+    case 2:
+    Serial.println("Gracias");
+    onn=0;
+    break;
+  }
+}
