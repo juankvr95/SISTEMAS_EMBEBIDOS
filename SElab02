@@ -1,0 +1,206 @@
+/*
+ *                UNIVERSIDAD TÉCNICA DEL NORTE 
+ *                   SISTEMAS EMBEBIDOS
+ *                  JUAN CARLOS VILATUÑA
+ *                     LABORATORIO 2
+ */
+
+
+#include <LiquidCrystal.h>
+#include <MsTimer2.h>
+
+LiquidCrystal lcd(13, 12, 11, 10, 9, 8);
+
+int horero = 0;
+int minutero = 0;
+int segundero = 0;
+int cntEncendido = 0;
+int cntModo = 0;
+int count = 0;
+int conversor1 = 0;
+int conversor2 = 0;
+
+const int led1 = 7;
+const int led2 = 6;
+const int led3= 5;
+const int led4 = 4;
+const int s1 = A2;   
+const int s2 = A3;   
+const int s3 = A4;  
+const int s4 = A5;  
+
+String e1;    
+String e2;    
+String e3;    
+String e4;  
+
+
+void setup() {
+  Serial.begin(9600);
+  lcd.begin(16, 2);
+  MsTimer2::set(8, reloj);
+  pinMode(led1,OUTPUT);
+  pinMode(led2,OUTPUT);
+  pinMode(led3,OUTPUT);
+  pinMode(led4,OUTPUT);
+  attachInterrupt(0, interEncendido, RISING);
+  attachInterrupt(1, interModo, RISING);
+    pinMode(s1,INPUT);
+    pinMode(s2,INPUT);
+    pinMode(s3,INPUT);
+    pinMode(s4,INPUT);
+}
+
+void loop() {
+  if (cntModo == 1) {
+    delay(10000);
+    int numero = random(0, 8);
+    Serial.println(numero);
+    switch (numero) {
+      case 1:
+          digitalWrite(led1,HIGH);
+        break;
+  
+        case 2:
+          digitalWrite(led2,HIGH);
+        break;
+  
+        case 3:
+          digitalWrite(led3,HIGH);
+        break;
+  
+        case 4:
+          digitalWrite(led4,HIGH);
+        break;
+  
+        case 5:
+          digitalWrite(led1,LOW);
+        break;
+  
+        case 6:
+          digitalWrite(led2,LOW);
+        break;
+  
+        case 7:
+          digitalWrite(led3,LOW);
+        break;
+        
+        case 8:
+          digitalWrite(led4,LOW);
+        break;
+    }
+  }
+  
+  if (cntModo == 3) {
+    conversor1 = analogRead(A0);
+    conversor2 = analogRead(A1);
+    conversor1 = map(conversor1, 0, 1023, 0, 23);
+    conversor2 = map(conversor2, 0, 1023, 0, 59);
+
+    horero = conversor1;
+    minutero = conversor2;
+    lcd.setCursor(4, 0);
+    lcd.print("--Sistema Encendido--");
+    lcd.setCursor(6, 1);
+    lcd.print(String(horero) + ":" + String(minutero) + ":" + String(segundero) + "  ");
+    cntModo++;
+    delay(1000);
+    MsTimer2::start();
+
+  }
+  while(cntModo==5){
+    if(digitalRead(s1)==HIGH)
+    e1 = "Sensor 1 ON";
+  if(digitalRead(s1)==LOW)
+    e1 = "Sensor 1 OFF";
+  if(digitalRead(s2)==HIGH)
+    e2 = "Sensor 2 ON";
+  if(digitalRead(s2)==LOW)
+    e2 = "Sensor 2 OFF";
+  if(digitalRead(s3)==HIGH)
+    e3 = "Sensor 3 ON";
+  if(digitalRead(s3)==LOW)
+    e3 = "Sensor 3 OFF";
+  if(digitalRead(s4)==HIGH)
+    e4 = "Sensor 4 ON";
+  if(digitalRead(s4)==LOW)
+    e4 = "Sensor 4 OFF";
+  Serial.println("SENSORES - ESTADO");
+  Serial.println(e1);
+  Serial.println(e2);
+  Serial.println(e3);
+  Serial.println(e4);
+  delay(400);
+    
+  }
+  
+}
+
+void interEncendido() {
+  switch (cntEncendido) {
+    case 0:
+      MsTimer2::start();
+      cntEncendido++;
+      break;
+    case 1:
+      cntEncendido++;
+      break;
+
+    case 2:
+      MsTimer2::stop();
+      cntEncendido = 0;
+      cntModo = 0;
+      horero = 0;
+      minutero = 0;
+      segundero = 0;
+      lcd.clear();
+      break;
+  }
+}
+
+void interModo() {
+  if (cntEncendido == 2) {
+    cntModo++;
+    switch (cntModo) {
+      case 1:
+        Serial.println("Modo 1 Activado." );
+        break;
+      case 3:
+        Serial.println("Modo 2 Activado.");
+        MsTimer2::stop();
+        break;
+      case 5:
+        Serial.println("Modo 3 Activado"); 
+      break;
+      case 6:
+        Serial.println("--Gracias--");
+        cntModo = 0;
+        break;
+
+    }
+  }
+
+}
+
+void reloj() {
+
+  if(segundero < 60)
+    segundero++;
+  else{
+    segundero = 0;
+    if (minutero < 60)
+      minutero++;
+      else{
+      minutero =0;
+      if (horero<24)
+      horero++;
+      else 
+      horero = 0;
+      }
+    }
+  lcd.setCursor(0, 0);
+  lcd.print("Sistema encendido");
+  lcd.setCursor(6, 1);
+  lcd.print(String(horero) + ":" + String(minutero) + ":" + String(segundero) + "  ");
+  segundero++;
+}
