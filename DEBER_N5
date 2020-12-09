@@ -1,0 +1,60 @@
+
+/*
+ *                    UNIVERSIDAD TÉCNICA DEL NORTE
+ *                         SISTEMAS EMBEBIDOS
+ *                      JUAN CARLOS VILATUÑA ROMO
+ *                               DEBER #5
+ * Realizar un programa que mediante interrupciones tenga 3 modos: Inicio del sistema, 
+ * giro de motor y fin de programa. El giro debe ser ingresado por comunicación serial. 
+ * 
+ */
+#include<Servo.h>
+Servo motor;  
+
+String dato;  
+int giro=0;
+int mov=0;
+int valor=0;
+ 
+void setup() {
+     
+  Serial.begin(9600);
+  Serial.println("Bienvenido usuario");
+  attachInterrupt(0,Interrupt,RISING);
+  motor.attach(3);    
+  motor.write(0);
+  
+}
+
+void loop() {
+  if(mov==2){
+    if(Serial.available()>0){
+            dato= Serial.readString();    
+            valor = dato.toInt();   
+            giro = valor;    
+      }else if(giro<180){
+              motor.write(giro);   
+        }else{
+              Serial.println(String("Error el valor es mayor,")+String("valor invalido: ")+String(giro));
+          }
+      }  
+  }
+
+void Interrupt(){    
+  switch(mov){ 
+    case 0:
+      Serial.println("Inicio del sistema");   
+      mov++;
+    break;
+    case 1:
+      Serial.println("Digitel el valor de 0 a 180");  
+      mov++;
+    break;
+    case 2:
+      Serial.println("Sistema finalizado");  
+      mov=0;
+      giro = 0;
+      valor = 0;
+    break;   
+  }
+}
