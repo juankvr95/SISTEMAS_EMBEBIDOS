@@ -1,0 +1,73 @@
+
+/*
+ *                     UNIVERSIDAD TÉCNICA DEL NORTE
+ *                         SISTEMAS EMBEBIDOS
+ *                      JUAN CARLOS VILATUÑA ROMO
+ *                               DEBER #8
+ *                               
+ * Realizar un código que el sistema se reinicia cada minuto, 
+ * active el conversor análogo-digital realice una lectura y 
+ * vuelve el sistema a un modo sleep.
+ * 
+ */
+
+
+#include <avr/power.h>
+#include <avr/sleep.h>
+#include <avr/wdt.h>
+#include <MsTimer2.h>
+
+int onn=0; 
+int tiempo = 0; 
+int cont = 0; 
+int segundos = 60;
+void setup() {
+  Serial.begin(9600);
+  Serial.println("Inicio de sistema");
+  MsTimer2::set(1000,reloj);
+  attachInterrupt(0,activ,LOW);
+}
+
+void loop() {
+  Serial.println(analogRead(0));
+  delay(1000);
+
+}
+
+void activ(){
+  switch(onn){
+    case 0:
+      Serial.println(" ENCENDIDO ..!!");
+      MsTimer2::start();
+      tiempo=60;
+      onn++;
+    break;
+
+    case 1:
+      Serial.println(" APAGADO ..!!");
+      tiempo = 0;
+      onn = 0;
+      cont = 0;
+      MsTimer2::stop();
+      power_adc_disable();
+    break;
+  }
+}
+
+
+void reloj(){
+
+  cont++;
+  power_adc_disable();  
+  Serial.println(String("lectura en:")+String(tiempo-cont));
+  if(cont == tiempo){
+    power_adc_enable();
+  }
+  else{
+    power_adc_disable();
+    delay(1000);
+  }
+  
+  if(cont == segundos) cont = 0;
+      
+}
