@@ -1,0 +1,87 @@
+/*
+ *                     UNIVERSIDAD TÉCNICA DEL NORTE
+ *                         SISTEMAS EMBEBIDOS
+ *                      JUAN CARLOS VILATUÑA ROMO
+ *                               DEBER #9
+ *                               
+ Realice un programa que mediante un conversor análogo-digital se configure el 
+ tiempo de reinicio del perro guardián (tiempos seleccionados por el usuario). 
+ Envíe mensajes por comunicación serial validando todo el proceso. 
+ * 
+ */
+
+
+#include <avr/wdt.h>
+#include <MsTimer2.h>
+
+
+int onn=0;
+int cont=0;
+int cad;
+int tiempo=0;
+int segundos = 60;
+
+void setup() {
+  Serial.begin(9600);
+  Serial.print("Inicio de Sistema");
+  MsTimer2::set(1000,reloj);
+  attachInterrupt(0,activacion,LOW);
+  attachInterrupt(1,configuracion,LOW);
+
+}
+
+void loop() {
+
+  if(onn==1){
+    cad = analogRead(0);
+    tiempo = map(cad, 0, 1023, 0, 60);
+    Serial.println(tiempo);
+    delay(2000);
+
+  }
+  
+}
+
+void reloj(){
+  cont++;
+  Serial.println(String("lectura en:")+String(tiempo-cont));
+  if(cont==tiempo){
+    wdt_disable();
+    wdt_enable(WDTO_1S);
+    cont=0; 
+  }
+  
+}
+
+void activacion(){
+  switch(onn){
+    case 0:
+      Serial.println("Bienvenido");
+      Serial.println("Seleccione el tiempo de lectura del cad");
+      onn++;
+    break;
+
+    case 1:
+      Serial.println(String("Reinicio en: ")+String(tiempo)+String(" seg"));
+      MsTimer2::start();
+      onn++;
+    break;
+
+    case 2:
+      Serial.println("Sistema Finalizado");
+      tiempo=0;
+      onn=0;
+      MsTimer2::stop();
+    break;
+  }
+}
+
+
+void configuracion(){
+  if(onn==1){
+      if(tiempo<segundos){
+        Serial.println(String("Segundos")+String(tiempo));
+      }else
+        tiempo = 0;
+  }
+}
