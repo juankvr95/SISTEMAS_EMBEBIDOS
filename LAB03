@@ -1,0 +1,307 @@
+/*
+                                    UNIVERSIDAD TÉCNICA DEL NORTE
+                                        SISTEMAS EMBEBIDOS
+                                       JUAN CARLOS VILATUÑA 
+                                 PERIFÉRICOS ESPECIALES E INTERFACES
+                                         LABORATORIO 3
+  
+*/
+
+import processing.serial.*;
+int filas = 30;
+int columnas = 30;
+int bs = 30;
+String dato;
+
+ArrayList<Integer> posX = new ArrayList<Integer>();  //array para que la snake vaya creciendo
+ArrayList<Integer> posY = new ArrayList<Integer>();
+
+int dir; //direccion,
+int dir1;
+
+int[] dx = {0,0,-1,1}; //direccion de la snake en x
+int[] dy = {-1,1,0,0}; //direccion en y
+int appleX;
+int appleY;
+int n=0;
+int p=0;
+boolean gameOver = false;
+Serial port;
+
+PImage img,img2,img3; 
+
+void setup(){
+size(800,600);
+posX.add(10);
+posY.add(10);
+frameRate(3);
+appleX = (int)random(0,20);
+appleY = (int)random(0,20);
+img=loadImage("cabeza.png");
+img2=loadImage("dk.png");
+img3=loadImage("cuerpo.png");
+port= new Serial(this, "COM6",9600);
+
+}
+void draw(){
+background(25);
+if(gameOver == true){
+ fill(155);
+ textSize(20);
+ text("Presione space para jugar",100,height/2); 
+ text("Nivel :"+n,100,100);
+ text("Puntaje :"+p,100,200);
+ appleX = -1;
+ appleY = -1;
+ posX.clear();
+ posY.clear();
+ posX.add(-10);
+ posY.add(-10);
+ }else{
+   stroke(50);
+   for(int i = 0; i < filas ; i++){
+     line(0,i*bs,width,i*bs);
+   }
+   for(int j=0; j<columnas;j++){
+     line(j*bs,0,j*bs,height);
+   }   
+ }
+
+  
+   drawApple();
+   drawSnake();
+   bordes();
+   choque();
+   moved();
+   eat();
+   
+    
+ }
+ 
+ void serialEvent(Serial port){
+   dato = port.readString();
+   switch(dato){
+     case "W":
+       dir = 0;
+     break;
+     
+     case "S":
+       dir =1; 
+     break;
+     
+     case "A":
+       dir = 2;
+     break;
+     
+     case "D":
+      dir = 3;
+     break;
+        
+ }
+ 
+}
+  
+   
+   
+ 
+
+
+void drawApple(){
+  fill(215,0,75);
+  image(img2,appleX * bs, appleY * bs, bs,bs);
+}
+
+void drawSnake(){
+  fill(40,50,230);
+  for(int i = 0; i<posX.size();i++){
+    image(img,posX.get(0)*bs, posY.get(0)*bs,bs,bs);
+    image(img3,posX.get(i)*bs, posY.get(i)*bs,bs,bs);
+  }
+}
+
+void moved(){
+
+  posX.add(0,posX.get(0)+dx[dir]);
+  posX.remove(posX.size()-1);
+  posY.add(0,posY.get(0)+dy[dir]);
+  posY.remove(posY.size()-1);
+
+ 
+}
+
+
+
+void keyPressed(){
+  
+  
+   if(key == 'W' || keyCode == 38 ) 
+   dir = 0;
+   if(key == 'S'|| keyCode == 40 ) 
+   dir = 1;
+   if( key == 'A' ||keyCode == 37) 
+   dir = 2;
+   if( key == 'D'||keyCode == 39) 
+   dir = 3;
+   if(key == ' '){
+     reset();
+   }
+   
+}
+
+
+void reset(){
+  gameOver = false;
+  posX.clear();
+  posY.clear();
+  posX.add(10);
+  posY.add(10);
+  appleX = (int) random(0,20);
+  appleY = (int) random(0,20);
+}
+
+void eat(){
+  if((posX.get(0) ==  appleX) && (posY.get(0) == appleY)){
+    appleX = (int)random(0,20);
+    appleY = (int)random(0,20);
+    posX.add(posX.get(posX.size()-1));
+    posY.add(posY.get(posY.size()-1));
+    
+    if(posX.size()== 4 && posY.size()== 4 ){
+    appleX = (int)random(0,20);
+    appleY = (int)random(0,20);
+    fill(155);
+    textSize(20);
+    text("Nivel :"+n++,100,100);
+    frameRate(8);
+    p = p+10;
+    }
+    
+    if(posX.size()== 8 && posY.size()== 8 ){
+    appleX = (int)random(0,20);
+    appleY = (int)random(0,20);
+    fill(155);
+    textSize(20);
+    text("Nivel :"+n++,100,100);
+    frameRate(8);
+    p = p+10;
+    }
+    
+    if(posX.size()== 15 && posY.size()== 15 ){
+    appleX = (int)random(0,20);
+    appleY = (int)random(0,20);
+    fill(155);
+    textSize(16);
+    text("Nivel :"+n++,100,100);
+    frameRate(16);
+    p = p+10;
+    }
+    
+    if(posX.size()== 20 && posY.size()== 20 ){
+    appleX = (int)random(0,20);
+    appleY = (int)random(0,20);
+    fill(155);
+    textSize(20);
+    text("Nivel :"+n++,100,100);
+    frameRate(25);
+    p = p+10;
+    }
+    
+    if(posX.size()== 25 && posY.size()== 25){
+    appleX = (int)random(0,20);
+    appleY = (int)random(0,20);
+    fill(155);
+    textSize(20);
+    text("Nivel :"+n++,100,100);
+    frameRate(32);
+    p = p+10;
+    }
+    
+    if(posX.size()== 30 && posY.size()== 30){
+    appleX = (int)random(0,20);
+    appleY = (int)random(0,20);
+    fill(155);
+    textSize(20);
+    text("Nivel :"+n++,100,100);
+    frameRate(40);
+    p = p+10;
+    }
+    
+    if(posX.size()== 35 && posY.size()== 35){
+    appleX = (int)random(0,20);
+    appleY = (int)random(0,20);
+    fill(155);
+    textSize(20);
+    text("Nivel :"+n++,100,100);
+    frameRate(48);
+    p = p+10;
+    }
+    
+    if(posX.size()== 40 && posY.size()== 40){
+    appleX = (int)random(0,20);
+    appleY = (int)random(0,20);
+    fill(155);
+    textSize(20);
+    text("Nivel :"+n++,100,100);
+    frameRate(56);
+    p = p+10;
+    }
+    
+    if(posX.size()== 45 && posY.size()== 45){
+    appleX = (int)random(0,20);
+    appleY = (int)random(0,20);
+    fill(155);
+    textSize(20);
+    text("Nivel :"+n++,100,100);
+    frameRate(65);
+    p = p+10;
+    }
+    
+    if(posX.size()== 50 && posY.size()== 50){
+    appleX = (int)random(0,20);
+    appleY = (int)random(0,20);
+    fill(155);
+    textSize(20);
+    text("Nivel :"+n++,100,100);
+    frameRate(75);
+    p = p+10;
+    }
+    
+    if(posX.size()== 56 && posY.size()== 56){
+    appleX = (int)random(0,20);
+    appleY = (int)random(0,20);
+    fill(155);
+    textSize(20);
+    text("Nivel :"+n++,100,100);
+    frameRate(85);
+    p = p+10;
+    }
+    
+    if(posX.size()== 65 && posY.size()== 65){
+    appleX = (int)random(0,20);
+    appleY = (int)random(0,20);
+    fill(155);
+    textSize(20);
+    text("Nivel :"+n++,100,100);
+    frameRate(95);
+    p = p+10;
+    }
+  
+  }
+}
+
+void bordes(){
+  if((posX.get(0)<0)||(posX.get(0)>columnas-1)||(posY.get(0)<0)||(posY.get(0)>filas-1)){
+    gameOver=true;
+  }
+}
+
+void choque(){
+  
+  for(int i = 2; i<posX.size();i++){
+    for(int j = 2; j<posY.size();j++){
+      if((posX.get(0) == posX.get(i))&& (posY.get(0) == posY.get(i))){
+        gameOver=true;
+      }
+    }
+  }
+}
