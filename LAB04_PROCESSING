@@ -1,0 +1,220 @@
+/*
+                                    UNIVERSIDAD TÉCNICA DEL NORTE
+                                        SISTEMAS EMBEBIDOS
+                                       JUAN CARLOS VILATUÑA 
+                                 INTERFACES Y APRENDIZAJE DE MÁQUINA
+                                           LABORATORIO 4
+  
+*/
+
+import processing.serial.*;
+import controlP5.*;
+
+Serial port;  
+ControlP5 cp5;
+PImage img;
+int x, y;
+int px, py;
+int f = 0;
+int c = 0;
+int i=0;
+float numerador = 0;
+float denominador = 0;
+int col = 0;  
+int fil = 0;
+int Ex = 0;  
+float Ey = 0;  
+float Exy = 0;  
+float Ex2 = 0;  
+float Ex_2 = 0;  
+int n = 14;  
+float B;  
+int estatura;  
+float peso;
+float r;
+float recta;
+int a, b;
+float mEx;
+float mEy;
+float mX;
+float mB;
+float angulo = 0;
+
+
+int [][] matriz ={
+  {170, 67}, 
+  {180, 80}, 
+  {170, 65}, 
+  {178, 75}, 
+  {160, 55}, 
+  {163, 60}, 
+  {165, 63}, 
+  {170, 70}, 
+  {164, 62}, 
+  {176, 77}, 
+  {164, 60}, 
+  {170, 76}, 
+  {170, 56}, 
+  {168, 60}
+};
+
+
+void setup() {
+
+  size(900, 600);  
+  background(#C9FFF8);  
+
+  for (; fil<n; fil++) {
+    Ex = Ex+matriz[fil][0];
+    Ey = Ey+log(matriz[fil][1]);
+    Exy = Exy+(matriz[fil][0]*log(matriz[fil][1]));
+    Ex2 = Ex2+pow(matriz[fil][0],2);
+  }
+  Ex_2 = pow(Ex, 2);
+  numerador = n*Exy - Ex*Ey;
+  denominador = n*Ex2-Ex_2;
+  B = numerador/denominador;
+  mEy = Ey/n;
+  mEx = Ex/n;
+  mX = B*mEx;
+  mB = mEy-mX;
+  r = exp(mB);
+  
+  cp5 = new ControlP5(this);
+  
+  cp5.addButton("START")
+     .setPosition(750,100)
+     .setSize(100,50)
+     .setColorBackground(#40CBBA)
+     .setColorActive(#D4FAF5)
+     .setColorForeground(#189586)
+     ;
+     
+   cp5.addButton("STOP")
+     .setPosition(750,200)
+     .setSize(100,50)
+     .setColorBackground(#40CBBA)
+     .setColorActive(#D4FAF5)
+     .setColorForeground(#189586)
+     ;
+   
+} 
+
+void serialEvent(Serial puerto) {
+  estatura = puerto.read();
+  println(estatura);
+} 
+
+
+void draw() {
+  
+  background(#189586);
+  img=loadImage("logo.png");
+  imageMode(CENTER);
+  image(img, x+80, y+80, 100, 100); 
+
+   texto();
+
+  stroke(25);
+  strokeWeight(8);
+  line(210, 58, 210, 560); //(0,largo,0,)
+  line(210, 560, 740, 560); 
+  
+  fill(255);
+   textSize(20);
+   text("y = 1.0707x - 112.95", 600, 22);
+   
+   stroke(255);
+   line(550, 15, 590, 15); //(0,movimientoY,tamaño,movimientoy)
+   
+
+
+  // grafica la recta 
+
+  for (i=160; i<=180; i++) {
+    recta = r*exp(B*i);
+    stroke(255);
+    strokeWeight(3);
+    fill(255);
+    line(150*15-2035,600-34.500*5,(200*15)-2290,600-71.780*5);
+  }
+  
+  // graficar puntos de la matriz
+
+  for (i=0; i<14; i++) {
+    a = matriz[i][0];
+    b = matriz[i][1];
+    noStroke();
+    fill(25);
+    ellipse(a*20-2940, 740-b*6, 10, 10);
+  }
+  
+  //grafica puntos estatura-peso
+
+  peso = r*exp(B*estatura);
+  stroke(0);
+  strokeWeight(1);
+  fill(255, 255, 0);
+  ellipse(estatura*20-2940, 740-peso*6, 10, 10); 
+
+  //////Cuadrícula 
+
+  for (px = 210; px < 740; px = px+55) {
+    stroke(25);
+    strokeWeight(4);
+    line(px, 50, px, 560);
+    c++;
+    textSize(9);
+    fill(0);
+    text(c*2.5+157, px-12, 580);
+    if (c==10) c=0;
+  }
+
+  for (py = 58; py < 740; py = py + 50) {
+    stroke(25);
+    strokeWeight(4);
+    line(210, py, 720, py);
+    f++;
+    textSize(9);
+    fill(0);
+    text(f*8.01, 160, 772-py);
+    if (f==14) f=0;
+  } 
+  
+  
+}
+void texto(){
+  pushMatrix();
+  fill(255);
+   textSize(23);
+   rotate(-HALF_PI);
+   text("UNIVERSIDAD TÉCNICA DEL NORTE", -550, 50);
+   popMatrix();
+   
+   pushMatrix();
+  fill(255);
+   textSize(22);
+   rotate(-HALF_PI);
+   text("JUAN CARLOS VILATUÑA", -510, 100);
+   popMatrix();
+   
+   pushMatrix();
+  fill(255);
+   textSize(20);
+   rotate(-HALF_PI);
+   text("CITEL", -410, 150);
+   popMatrix(); 
+   
+}
+
+public void START(){
+  
+  port=new Serial(this,"COM10",9600);
+  
+}
+
+public void STOP(){
+  
+  port.stop();
+  
+}
