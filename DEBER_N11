@@ -1,0 +1,80 @@
+/*
+                                    UNIVERSIDAD TÉCNICA DEL NORTE
+                                        SISTEMAS EMBEBIDOS
+                                       JUAN CARLOS VILATUÑA 
+                                            DEBER #11
+Realice la regresión lineal exponencial dentro del entorno de Arduino con el conjunto de datos estatura-peso. 
+Con esto, ingrese por comunicación serial los nuevos datos de estatura e imprima el pronóstico del peso.
+*/
+
+//matriz de datos tomados
+int matriz [14][2]={
+  {170,67},
+  {180,80},
+  {170,65},
+  {178,75},
+  {160,55},
+  {163,60},
+  {165,63},
+  {170,70},
+  {164,62},
+  {176,77},
+  {164,60},
+  {170,76},
+  {170,56},
+  {168,60},
+};
+
+int col = 0;  //moverse en columnas
+int fil = 0;  //moverse en filas
+int Ex = 0;  //Sumatoria de X
+float Ey = 0;  //Sumatoria de Y
+float Exy = 0;  //Sumatoria de XY
+long int Ex2 = 0;  //Sumatoria de X^2
+long int Ex_2 = 0;  //(Ex)^2
+int n = 14;  //tam muestras
+float m;  //Odenada en el origen
+String dato;  //Recibir estatura
+int estatura;  //convertir dato
+float peso; //formula
+float a; // exp
+float b; //interseccion
+
+void setup() {
+  Serial.begin(9600);
+  //creacion del modelo 
+  //(x,log(y))
+  for(;fil<n;fil++){
+    Ex = Ex+matriz[fil][0];
+    Ey = Ey+log(matriz[fil][1]);
+    Exy = Exy+(matriz[fil][0]*log(matriz[fil][1]));
+    Ex2 = Ex2+pow(matriz[fil][0],2);
+  }
+  
+    //pendiente
+    // m = nExy - (Ex)(Ey) / n(Ex^2) - Ex^2
+  
+  Ex_2 = pow(Ex,2);
+  m = ((float(n*Exy)-float(Ex*Ey))/(float (n*Ex2-Ex_2)));
+
+   //interseccion
+   // b = Ey - m(Ex) / n 
+   
+  b = ((Ey/n)-(m*(Ex/n)));
+  a = exp(b);
+
+  Serial.println("El modelo es: ");
+    //y = a*r^x
+  Serial.println(String("Y = ")+String(a)+String(" * ")+String("r^(")+String(m)+String(")"));
+  Serial.println("Ingrese su estatura: ");
+}
+
+void loop() {
+  if(Serial.available()>0){
+    dato = Serial.readString();
+    estatura = dato.toInt();
+    peso = a*exp(m*estatura);
+    Serial.println(String(" Su peso ideal: ")+String(peso)+String("Kg"));
+    Serial.println("Ingrese su estatura: ");
+  }
+}
